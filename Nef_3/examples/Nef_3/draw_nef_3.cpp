@@ -9,6 +9,9 @@
 
 #include <CGAL/OFF_to_nef_3.h>
 
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/boost/graph/convert_nef_polyhedron_to_polygon_mesh.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -32,6 +35,7 @@ using CGAL_Polyhedron = CGAL::Polyhedron_3<CGAL_Kernel3>;
 typedef CGAL_Kernel3 Kernel;
 typedef CGAL_Polyhedron Polyhedron;
 typedef CGAL_Nef_polyhedron3 Nef_polyhedron;
+typedef CGAL::Surface_mesh<Kernel::Point_3> Surface_mesh_;
 
 using namespace CGAL;
 
@@ -73,6 +77,17 @@ HOGE (std::istream &i_st, Nef_3 &nef_union, bool verb=true)
    V_scan.reserve (NOV);
    Point_set V;
    V.reserve (NOV);
+
+   {
+       Scan_point sp;
+       std::cout << "x : " << sp.x() << std::endl;
+       std::cout << "y : " << sp[1] << std::endl;
+   }
+   {
+       Scan_point sp(1.0,2.0,3.0);
+       std::cout << "x : " << sp.x() << std::endl;
+       std::cout << "y : " << sp[1] << std::endl;
+   }
 
    Scan_vertex_it v_it = scan.vertices_begin();
    for (idx=0; v_it != scan.vertices_end(); ++v_it, ++idx)
@@ -168,7 +183,13 @@ int main(int argc, char *argv[])
   // draw Nef Polyhedron
   // std::cout << NN << std::endl;
 
-  CGAL::draw(NN);
+  //CGAL::draw(NN);
+  Surface_mesh_ output;
+  CGAL::convert_nef_polyhedron_to_polygon_mesh(NN, output);
+  std::ofstream out;
+  out.open("out.off");
+  out << output;
+  out.close();
 
   return EXIT_SUCCESS;
 }
