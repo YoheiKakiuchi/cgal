@@ -35,7 +35,9 @@ using CGAL_Polyhedron = CGAL::Polyhedron_3<CGAL_Kernel3>;
 typedef CGAL_Kernel3 Kernel;
 typedef CGAL_Polyhedron Polyhedron;
 typedef CGAL_Nef_polyhedron3 Nef_polyhedron;
-typedef CGAL::Surface_mesh<Kernel::Point_3> Surface_mesh_;
+
+typedef CGAL::Surface_mesh<CGAL::Cartesian<double>::Point_3> Surface_mesh_;
+//typedef CGAL::Surface_mesh<Kernel::Point_3> Surface_mesh_;
 
 using namespace CGAL;
 
@@ -186,6 +188,43 @@ int main(int argc, char *argv[])
   //CGAL::draw(NN);
   Surface_mesh_ output;
   CGAL::convert_nef_polyhedron_to_polygon_mesh(NN, output);
+
+  //output.vertices();
+  std::cout << "ver: " << output.number_of_vertices() << std::endl;
+  std::cout << "fcs: " << output.number_of_faces() << std::endl;
+
+  {
+      std::cout << "vtx" << std::endl;
+      long cntr = 0;
+      for(auto it = output.vertices_begin(); it != output.vertices_end(); it++, cntr++) {
+          std::size_t ii = (std::size_t)(*it);
+          if (ii != cntr) {
+              std::cerr << ":failed: ";
+          }
+          CGAL::Cartesian<double>::Point_3  pt = output.point(*it);
+          std::cout << cntr << " " << (*it) << " ";
+          std::cout << pt.x() << " ";
+          std::cout << pt.y() << " ";
+          std::cout << pt.z() << std::endl;
+      }
+  }
+  {
+      std::cout << "fc" << std::endl;
+      for(auto it = output.faces_begin(); it != output.faces_end(); it++) {
+          std::cout << (*it) << " : ";
+          auto st = output.halfedge(*it);
+          auto nx = output.next(st);
+          std::cout << st;
+          std::cout << "(" << output.target(st) << ")";
+          while(nx != st) {
+              std::cout << " " << nx;
+              std::cout << "(" << output.target(nx) << ")";
+              nx = output.next(nx);
+          }
+          std::cout << std::endl;
+      }
+  }
+
   std::ofstream out;
   out.open("out.off");
   out << output;
