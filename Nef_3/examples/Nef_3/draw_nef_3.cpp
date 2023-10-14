@@ -181,11 +181,12 @@ int main(int argc, char *argv[])
   Nef_polyhedron N1(P1);
   Nef_polyhedron N2(P2);
 
-  Nef_polyhedron NN(N1-N2);
+  //Nef_polyhedron NN(N1-N2);
+  Nef_polyhedron NN(N1*N2);
+
   // draw Nef Polyhedron
   // std::cout << NN << std::endl;
 
-  //CGAL::draw(NN);
   Surface_mesh_ output;
   CGAL::convert_nef_polyhedron_to_polygon_mesh(NN, output);
 
@@ -229,6 +230,8 @@ int main(int argc, char *argv[])
   out.open("out.off");
   out << output;
   out.close();
+
+  CGAL::draw(NN);
 
   return EXIT_SUCCESS;
 }
